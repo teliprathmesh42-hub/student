@@ -1,0 +1,490 @@
+
+<!-- LOGIN PAGE -->
+<div class="login-page" *ngIf="page === 'login'">
+  <div class="login-card">
+    <div class="logo">🎓</div>
+    <h1>Student Portal</h1>
+    <p class="subtitle">Please login to continue</p>
+
+    <form (ngSubmit)="login()">
+      <input type="text" name="loginId" [(ngModel)]="loginId"
+        placeholder="Enter Student ID" required>
+
+      <input type="password" name="loginPassword"
+        [(ngModel)]="loginPassword"
+        placeholder="Enter Password" required>
+
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    <p class="message" [class.success]="isSuccess">{{ message }}</p>
+
+    <div class="register-link">
+      Don't have an account?
+      <a href="#" (click)="openRegister(); $event.preventDefault()">Register Now</a>
+    </div>
+
+    <p class="demo">Demo: ID admin | Password 1234</p>
+  </div>
+</div>
+
+<!-- REGISTRATION PAGE -->
+<div class="login-page" *ngIf="page === 'register'">
+  <div class="login-card register-card">
+    <div class="logo">🎓</div>
+    <h1>Student Registration</h1>
+    <p class="subtitle">Create your student account</p>
+
+    <form (ngSubmit)="register()">
+      <input type="text" name="studentName" [(ngModel)]="studentName"
+        placeholder="Full Name" required>
+
+      <input type="email" name="email" [(ngModel)]="email"
+        placeholder="Email Address" required>
+
+      <input type="tel" name="mobile" [(ngModel)]="mobile"
+        placeholder="Mobile Number" required>
+
+      <input type="text" name="regId" [(ngModel)]="regId"
+        placeholder="Create Student ID" required>
+
+      <input type="password" name="regPassword" [(ngModel)]="regPassword"
+        placeholder="Create Password" required>
+
+      <input type="password" name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        placeholder="Confirm Password" required>
+
+      <button type="submit" class="login-btn">Register</button>
+    </form>
+
+    <p class="message" [class.success]="isSuccess">{{ message }}</p>
+
+    <div class="register-link">
+      Already have an account?
+      <a href="#" (click)="openLogin(); $event.preventDefault()">Login Now</a>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" *ngIf="page === 'dashboard'">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-logo">🎓</span>
+      <div>
+        <h2>Educanize</h2>
+        <small>School Management</small>
+      </div>
+    </div>
+
+    <nav class="menu">
+      @for (m of menu; track m.page) {
+        <button type="button" class="menu-item"
+          [class.active]="selectedPage === m.page"
+          (click)="changePage(m.page)">
+          <span class="ico">{{ m.icon }}</span>
+          <span class="txt">{{ m.label }}</span>
+        </button>
+      }
+    </nav>
+
+    <div class="side-user">
+      <span class="avatar">{{ initials }}</span>
+      <div>
+        <b>{{ currentUser }}</b>
+        <small>Super Admin</small>
+      </div>
+    </div>
+
+    <button type="button" class="logout" (click)="logout()">
+      <span class="ico">🚪</span> Logout
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <header class="topbar">
+      <div>
+        <h1>{{ selectedPage }}</h1>
+        <p class="crumb">Home / {{ selectedPage }}</p>
+      </div>
+
+      <div class="top-right">
+        <span class="date">📅 {{ today }}</span>
+        <div class="user-chip">
+          <span class="avatar">{{ initials }}</span>
+          <div>
+            <b>{{ currentUser }}</b>
+            <small>Super Admin</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <ng-container *ngIf="selectedPage === 'Dashboard'">
+
+      <section class="stats">
+        @for (s of stats; track s.label) {
+          <div class="stat" [style.background]="s.color">
+            <div class="stat-body">
+              <h2>{{ s.value }}</h2>
+              <p>{{ s.label }}</p>
+            </div>
+            <span class="stat-icon">{{ s.icon }}</span>
+            <a class="stat-foot">More info ➜</a>
+          </div>
+        }
+      </section>
+
+      <section class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Weekly Attendance</h3>
+            <span class="tag">This Week</span>
+          </div>
+
+          <div class="chart">
+            @for (w of weekly; track w.day) {
+              <div class="bar-col">
+                <div class="bar" [style.height.%]="w.percent">
+                  <span>{{ w.percent }}%</span>
+                </div>
+                <small>{{ w.day }}</small>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Students by Course</h3>
+            <span class="tag">{{ totalCourseStudents }} total</span>
+          </div>
+
+          <div class="donut-wrap">
+            <div class="donut" [style.background]="donut">
+              <div class="donut-hole">
+                <b>{{ totalCourseStudents }}</b>
+                <small>Students</small>
+              </div>
+            </div>
+
+            <ul class="legend">
+              @for (c of courses; track c.name) {
+                <li>
+                  <span class="dot" [style.background]="c.color"></span>
+                  {{ c.name }}
+                  <b>{{ c.count }}</b>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Recent Registrations</h3>
+            <a class="link" (click)="changePage('Student List')">View all</a>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of recentUsers; track u.studentId) {
+                <tr>
+                  <td>
+                    <div class="cell-user">
+                      <span class="avatar sm">{{ getInitial(u.name) }}</span>
+                      {{ u.name }}
+                    </div>
+                  </td>
+                  <td>{{ u.studentId }}</td>
+                  <td>{{ u.email }}</td>
+                  <td><span class="badge">Active</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Fees Overview</h3>
+            <span class="tag">2026</span>
+          </div>
+
+          @for (f of fees; track f.label) {
+            <div class="fee">
+              <div class="fee-top">
+                <span>{{ f.label }}</span>
+                <b>{{ f.amount }}</b>
+              </div>
+              <div class="progress">
+                <div class="progress-bar"
+                  [style.width.%]="f.percent"
+                  [style.background]="f.color">
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Notice Board</h3>
+          </div>
+          <ul class="list">
+            @for (n of notices; track n.title) {
+              <li>
+                <span class="pin">📌</span>
+                <div>
+                  <p>{{ n.title }}</p>
+                  <small>{{ n.time }}</small>
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Recent Activity</h3>
+          </div>
+          <ul class="list">
+            @for (a of activities; track a.text) {
+              <li>
+                <span class="pin">{{ a.icon }}</span>
+                <div>
+                  <p>{{ a.text }}</p>
+                  <small>{{ a.time }}</small>
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- ATTENDANCE -->
+    <div class="panel page-box" *ngIf="selectedPage === 'Attendance'">
+      <div class="att-top">
+        <h3>Attendance Management</h3>
+        <div class="att-filters">
+          <input type="date" [(ngModel)]="attDate" name="attDate">
+
+          <select [(ngModel)]="attCourse" name="attCourse">
+            @for (c of attCourses; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+
+          <input type="text" [(ngModel)]="attSearch"
+            name="attSearch" placeholder="🔍 Search name or roll no">
+        </div>
+      </div>
+
+      <div class="att-summary">
+        <div class="sum green">
+          <b>{{ countStatus('Present') }}</b><span>Present</span>
+        </div>
+        <div class="sum red">
+          <b>{{ countStatus('Absent') }}</b><span>Absent</span>
+        </div>
+        <div class="sum amber">
+          <b>{{ countStatus('Leave') }}</b><span>Leave</span>
+        </div>
+        <div class="sum blue">
+          <b>{{ attPercent }}%</b><span>Attendance</span>
+        </div>
+      </div>
+
+      <div class="att-actions">
+        <button type="button" class="btn sm"
+          (click)="markAll('Present')">Mark All Present</button>
+        <button type="button" class="btn danger sm"
+          (click)="markAll('Absent')">Mark All Absent</button>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Roll</th><th>Name</th><th>Course</th>
+            <th>Status</th><th>Mark</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of filteredAttendance; track r.roll) {
+            <tr>
+              <td>{{ r.roll }}</td>
+              <td>
+                <div class="cell-user">
+                  <span class="avatar sm">{{ getInitial(r.name) }}</span>
+                  {{ r.name }}
+                </div>
+              </td>
+              <td>{{ r.course }}</td>
+              <td>
+                <span class="badge"
+                  [class.warn]="r.status === 'Leave'"
+                  [class.bad]="r.status === 'Absent'">
+                  {{ r.status }}
+                </span>
+              </td>
+              <td>
+                <div class="mark-btns">
+                  <button type="button" class="m p"
+                    [class.on]="r.status === 'Present'"
+                    (click)="setStatus(r.roll, 'Present')">P</button>
+
+                  <button type="button" class="m a"
+                    [class.on]="r.status === 'Absent'"
+                    (click)="setStatus(r.roll, 'Absent')">A</button>
+
+                  <button type="button" class="m l"
+                    [class.on]="r.status === 'Leave'"
+                    (click)="setStatus(r.roll, 'Leave')">L</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5">No students found.</td></tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="att-save">
+        <button type="button" class="btn" (click)="saveAttendance()">
+          💾 Save Attendance
+        </button>
+        <p class="ok" *ngIf="attSaved">{{ attSaved }}</p>
+      </div>
+    </div>
+
+    <!-- COURSE MANAGEMENT -->
+    <div class="panel page-box" *ngIf="selectedPage === 'Course Management'">
+      <h3>Course Management</h3>
+
+      <form class="form-grid" (ngSubmit)="addCourse()" #cf="ngForm">
+        <input type="text" name="cName" [(ngModel)]="newCourse.name"
+          placeholder="Course Name" required>
+
+        <input type="text" name="cDur" [(ngModel)]="newCourse.duration"
+          placeholder="Duration (e.g. 3 Years)" required>
+
+        <input type="number" name="cFees" [(ngModel)]="newCourse.fees"
+          placeholder="Course Fees" required>
+
+        <button type="submit" class="btn" [disabled]="cf.invalid">
+          Add Course
+        </button>
+      </form>
+
+      <table class="table">
+        <thead>
+          <tr><th>Course</th><th>Duration</th><th>Fees</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          @for (c of courseList; track c.name) {
+            <tr>
+              <td>{{ c.name }}</td>
+              <td>{{ c.duration }}</td>
+              <td>₹{{ c.fees }}</td>
+              <td>
+                <button type="button" class="btn danger sm"
+                  (click)="deleteCourse(c.name)">Delete</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4">No courses found.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FEES MANAGEMENT -->
+    <div class="panel page-box" *ngIf="selectedPage === 'Fees Management'">
+      <h3>Fees &amp; Payments</h3>
+
+      <form class="form-grid" (ngSubmit)="addFee()" #ff="ngForm">
+        <input type="text" name="fId" [(ngModel)]="newFee.studentId"
+          placeholder="Student ID" required>
+
+        <input type="number" name="fTotal" [(ngModel)]="newFee.total"
+          placeholder="Total Fees" required>
+
+        <input type="number" name="fPaid" [(ngModel)]="newFee.paid"
+          placeholder="Paid Fees" required>
+
+        <button type="submit" class="btn" [disabled]="ff.invalid">
+          Submit Fees
+        </button>
+      </form>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Student ID</th><th>Total</th><th>Paid</th>
+            <th>Pending</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of feeList; track $index) {
+            <tr>
+              <td>{{ f.studentId }}</td>
+              <td>₹{{ f.total }}</td>
+              <td>₹{{ f.paid }}</td>
+              <td>₹{{ f.total - f.paid }}</td>
+              <td>
+                <span class="badge" [class.warn]="f.total - f.paid > 0">
+                  {{ f.total - f.paid > 0 ? 'Pending' : 'Paid' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="panel page-box" *ngIf="selectedPage === 'Reports'">
+      <h3>Reports</h3>
+      <div class="report-grid">
+        @for (r of reports; track r.title) {
+          <div class="report-card">
+            <span class="report-ico">{{ r.icon }}</span>
+            <h4>{{ r.title }}</h4>
+            <p>{{ r.desc }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- STUDENT LIST -->
+    <div class="panel page-box" *ngIf="selectedPage === 'Student List'">
+      <app-students></app-students>
+    </div>
+
+    <!-- COMING SOON -->
+    <div class="panel page-box" *ngIf="isComingSoon">
+      <h3>{{ selectedPage }}</h3>
+      <p>🚧 This module is coming soon.</p>
+    </div>
+
+  </main>
+</div>
