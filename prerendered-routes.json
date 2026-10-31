@@ -1,0 +1,20 @@
+{
+  "routes": {
+    "/academics": {},
+    "/assignments": {},
+    "/attendance": {},
+    "/dashboard": {},
+    "/examinations": {},
+    "/fees": {},
+    "/hostel": {},
+    "/library": {},
+    "/login": {},
+    "/parents": {},
+    "/register": {},
+    "/reports": {},
+    "/students": {},
+    "/teachers": {},
+    "/timetable": {},
+    "/transport": {}
+  }
+}
